@@ -83,7 +83,7 @@ class Dealer:
     def __init__(self):
         self.cards = []
         self.hand_scores = [0, 0]
-        self.best_outcomes = 'Awaiting deal'
+        self.best_outcome = 'Awaiting deal'
     
     def __repr__(self):
         return 'Dealer Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards, list(set(self.hand_scores), self.best_outcome))
