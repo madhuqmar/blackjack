@@ -73,7 +73,7 @@ class Deck:
         return drawn_card
     
     def reset(self):
-        self.cards []
+        self.cards = []
         self.create(self.number_of_decks)
 
 
