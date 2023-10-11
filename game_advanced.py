@@ -77,35 +77,35 @@ class Deck:
         self.create(self.number_of_decks)
 
 
-    class Dealer:
-        def __init__(self):
-            self.cards = []
-            self.hand_scores = [0, 0]
-            self.best_outcomes = 'Awaiting deal'
-        
-        def __repr__(self):
-            return 'Dealer Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards,
-                    list(set(self.hand_scores)), self.best_outcome)
+class Dealer:
+    def __init__(self):
+        self.cards = []
+        self.hand_scores = [0, 0]
+        self.best_outcomes = 'Awaiting deal'
+    
+    def __repr__(self):
+        return 'Dealer Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards,
+                list(set(self.hand_scores)), self.best_outcome)
 
-        def hit(self, game_deck):
-            draw_card = game_deck.draw()
-            self.cards.append(draw_card)
-            card_scores = draw_card.card_scores
-            self.hand_scores = [a + b for a, b in zip(self.hand_scores, card_scores)]
+    def hit(self, game_deck):
+        draw_card = game_deck.draw()
+        self.cards.append(draw_card)
+        card_scores = draw_card.card_scores
+        self.hand_scores = [a + b for a, b in zip(self.hand_scores, card_scores)]
 
-            if len(self.cards) <= 1:
-                self.best_outcome = 'Awaiting Deal'
-            elif 21 in self.hand_sores and len(self.cards) ==2:
-                self.best_outcome = 'Blackjack'
-            elif self.hand_scores[0] > 21 and self.hand_scores[1] > 21:
-                self.best_outcome = 'Bust'
-            else:
-                self.best_outcome = max([i for i in self.hand_scores if i <= 21])
-            
-        def reset(self):
-            self.cards.clear()
-            self.hand_scores = [0, 0]
+        if len(self.cards) <= 1:
             self.best_outcome = 'Awaiting Deal'
+        elif 21 in self.hand_sores and len(self.cards) ==2:
+            self.best_outcome = 'Blackjack'
+        elif self.hand_scores[0] > 21 and self.hand_scores[1] > 21:
+            self.best_outcome = 'Bust'
+        else:
+            self.best_outcome = max([i for i in self.hand_scores if i <= 21])
+        
+    def reset(self):
+        self.cards.clear()
+        self.hand_scores = [0, 0]
+        self.best_outcome = 'Awaiting Deal'
 
 
 class Player:
