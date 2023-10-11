@@ -150,7 +150,7 @@ class Player:
         self.hand_scores = [0, 0]
         self.best_outcome = 'Awaiting deal'
         self.possible_actions = []
-        self.has_doubled_down = Falseß
+        self.has_doubled_down = False
 
 
 class GamePlay:
