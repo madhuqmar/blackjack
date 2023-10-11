@@ -1,5 +1,5 @@
-import streamlit as st
 from PIL import Image
+import streamlit as st
 from game_advanced import GamePlay, Player, Dealer, Deck
 
 
@@ -7,7 +7,7 @@ number_of_decks = 8
 blackjack_multiplier = 1.5
 
 
-@st.cache(allow_output_mutation=True, supress_st_warning=True)
+@st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def start_game():
     game_deck = Deck(number_of_decks)
     dealer = Dealer()
