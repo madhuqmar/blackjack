@@ -3,7 +3,7 @@ class Card:
         self.rank = rank
         self.suit = suit
 
-        if self.rabk == 1:
+        if self.rank == 1:
             self.card_scores = [1, 11]
         elif self.rank > 11 and self.rank <= 14:
             self.card_scores = [10, 10]
