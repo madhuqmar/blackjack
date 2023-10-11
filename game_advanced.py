@@ -14,10 +14,10 @@ class Card:
         if self.rank == 1:
             self.short_rank = 'ace'
         elif self.rank == 11:
-            self.short_rank == 'jack'
+            self.short_rank = 'jack'
         elif self.rank == 12:
             self.short_rank = 'queen'
-        elif self.rank = 13:
+        elif self.rank == 13:
             self.short_rank = 'king'
         else:
             self.short_rank = str(self.rank)
@@ -25,9 +25,9 @@ class Card:
 
         if self.suit == 'Spades':
             self.short_suit = 'spades'
-        elif self.suit = 'Hearts':
+        elif self.suit == 'Hearts':
             self.short_suit = 'hearts'
-        elif self.suit = 'Clubs':
+        elif self.suit == 'Clubs':
             self.short_suit = 'clubs'
         else:
             self.short_suit = 'diamonds'
