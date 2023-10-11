@@ -141,7 +141,7 @@ class Deck:
                 self.possible_actions = ['Hit', 'Stand', 'Double Down']
                 game_play.commentary.append('Player can sitll hit, double down or stand')
             else:
-                self.possible_actions = ['Hit', 'Srand']
+                self.possible_actions = ['Hit', 'Stand']
                 game_play.commentary.append('Player can still hit or stand')
 
         def reset(self):
