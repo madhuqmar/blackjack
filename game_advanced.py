@@ -108,48 +108,48 @@ class Deck:
             self.best_outcome = 'Awaiting Deal'
 
 
-    class Player:
-        def __init__(self):
-            self.cards = []
-            self.hand_scores = [0, 0]
-            self.best_outcome = 'Awaiting deal'
-            self.possible_actions = ['No deal yet']
-        
-        def __repr__(self):
-            return 'Player Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards, list(set(self.hand_scores)),
-                        self.best_outcome)
-        
-        def stand(self, game_play):
+class Player:
+    def __init__(self):
+        self.cards = []
+        self.hand_scores = [0, 0]
+        self.best_outcome = 'Awaiting deal'
+        self.possible_actions = ['No deal yet']
+    
+    def __repr__(self):
+        return 'Player Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards, list(set(self.hand_scores)),
+                    self.best_outcome)
+    
+    def stand(self, game_play):
+        self.possible_actions = []
+        game_play.commentary.append('Player is standing')
+    
+    def double_down(self, game_deck, game_play):
+        self.hit(game_deck)
+        game_play.commentary.append('Player is doubling down')
+        self.possible_actions = []
+    
+    def player_hit(self, game_deck, game_play):
+        self.hit(game_deck)
+        game_play.commentary.append('Player has hit')
+        self.get_possibilities(game_play)
+    
+    def get_possibilities(self, game_play):
+        if self.best_outcome in ['Blackjack', 'Bust', 21]:
             self.possible_actions = []
-            game_play.commentary.append('Player is standing')
-        
-        def double_down(self, game_deck, game_play):
-            self.hit(game_deck)
-            game_play.commentary.append('Player is doubling down')
-            self.possible_actions = []
-        
-        def player_hit(self, game_deck, game_play):
-            self.hit(game_deck)
-            game_play.commentary.append('Player has hit')
-            self.get_possibilities(game_play)
-        
-        def get_possibilities(self, game_play):
-            if self.best_outcome in ['Blackjack', 'Bust', 21]:
-                self.possible_actions = []
-                game_play.commentary.append('Player has no options')
-            elif len(self.cards) == 2:
-                self.possible_actions = ['Hit', 'Stand', 'Double Down']
-                game_play.commentary.append('Player can sitll hit, double down or stand')
-            else:
-                self.possible_actions = ['Hit', 'Stand']
-                game_play.commentary.append('Player can still hit or stand')
+            game_play.commentary.append('Player has no options')
+        elif len(self.cards) == 2:
+            self.possible_actions = ['Hit', 'Stand', 'Double Down']
+            game_play.commentary.append('Player can sitll hit, double down or stand')
+        else:
+            self.possible_actions = ['Hit', 'Stand']
+            game_play.commentary.append('Player can still hit or stand')
 
-        def reset(self):
-            self.cards = []
-            self.hand_scores = [0, 0]
-            self.best_outcome = 'Awaiting deal'
-            self.possible_actions = []
-            self.has_doubled_down = Falseß
+    def reset(self):
+        self.cards = []
+        self.hand_scores = [0, 0]
+        self.best_outcome = 'Awaiting deal'
+        self.possible_actions = []
+        self.has_doubled_down = Falseß
 
 
 class GamePlay:
