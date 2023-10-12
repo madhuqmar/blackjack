@@ -225,9 +225,9 @@ class GamePlay:
         self.player.reset()
         self.game_deck.reset()
         self.reset()
-        self.player.hit(self.game_deck)
+        self.player.player_hit(self.game_deck, self)
         self.dealer.hit(self.game_deck)
-        self.player.hit(self.game_deck)
+        self.player.player_hit(self.game_deck, self)
         self.player.get_possibilities(self)
 
 
