@@ -64,7 +64,7 @@ class Deck:
         return 'Game deck has {} cards remaining'.format(len(self.cards))
 
     def create(self, number_of_decks):
-        decks = [Card(rank, suit) for suit in suits for rank in range(1, 14) for feck in 
+        decks = [Card(rank, suit) for suit in suits for rank in range(1, 14) for deck in 
                     range(number_of_decks)]
         decks = random.sample(decks, len(decks))
         self.cards.extend(decks)
@@ -226,9 +226,9 @@ class GamePlay:
         self.player.reset()
         self.game_deck.reset()
         self.reset()
-        self.player.player_hit(self.game_deck)
+        self.player.hit(self.game_deck)
         self.dealer.hit(self.game_deck)
-        self.player.player_hit(self.game_deck)
+        self.player.hit(self.game_deck)
         self.player.get_possibilities(self)
 
 
