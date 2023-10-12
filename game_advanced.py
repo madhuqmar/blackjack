@@ -38,18 +38,18 @@ class Card:
         self.image_location = 'card_images/{}_of_{}.png'.format(self.short_rank, self.short_suit)
 
         
-        def __repr__(self):
-            if self.rank == 1:
-                true_rank = 'Ace'
-            elif self.rank == 11:
-                true_rank = 'Jack'
-            elif self.rank == 12:
-                true_rank = 'Queen'
-            elif self.rank == 13:
-                true_rank = 'King'
-            else:
-                true_rank = str(self.rank)
-            return '{} of {}'.format(true_rank, self.suit)
+    def __repr__(self):
+        if self.rank == 1:
+            true_rank = 'Ace'
+        elif self.rank == 11:
+            true_rank = 'Jack'
+        elif self.rank == 12:
+            true_rank = 'Queen'
+        elif self.rank == 13:
+            true_rank = 'King'
+        else:
+            true_rank = str(self.rank)
+        return '{} of {}'.format(true_rank, self.suit)
 
 
 suits = ('Spades', 'Hearts', 'Clubs', 'Diamonds')
@@ -155,8 +155,8 @@ class Player:
 
 class GamePlay:
     def __init__(self, player, dealer, game_deck, blackjack_multiplier):
-        self.player = Player()
-        self.dealer = Dealer()
+        self.player = player
+        self.dealer = dealer
         self.game_deck = game_deck 
         self.blackjack_multiplier = blackjack_multiplier 
         self.commentary = []
