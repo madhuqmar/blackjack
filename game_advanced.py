@@ -155,8 +155,8 @@ class Player:
 
 class GamePlay:
     def __init__(self, player, dealer, game_deck, blackjack_multiplier):
-        self.player = player 
-        self.dealer = dealer 
+        self.player = Player()
+        self.dealer = Dealer()
         self.game_deck = game_deck 
         self.blackjack_multiplier = blackjack_multiplier 
         self.commentary = []
@@ -217,7 +217,6 @@ class GamePlay:
         else:
             pass 
         
-
     def reset(self):
         self.commentary = []
 
