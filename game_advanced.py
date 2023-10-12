@@ -129,7 +129,7 @@ class Player:
         game_play.commentary.append('Player is doubling down')
         self.possible_actions = []
     
-    def hit(self, game_deck, game_play):
+    def player_hit(self, game_deck, game_play):
         self.hit(game_deck)
         game_play.commentary.append('Player has hit')
         self.get_possibilities(game_play)
