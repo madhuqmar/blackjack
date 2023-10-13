@@ -3,11 +3,11 @@ import streamlit as st
 from game_advanced import GamePlay, Player, Dealer, Deck
 
 
-number_of_decks = 8
+number_of_decks = 6
 blackjack_multiplier = 1.5
 
 
-@st.cache(allow_output_mutation=True, suppress_st_warning=True)
+@st.cache_data(allow_output_mutation=True, suppress_st_warning=True)
 def start_game():
     game_deck = Deck(number_of_decks)
     dealer = Dealer()
