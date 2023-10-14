@@ -3,7 +3,7 @@ import streamlit as st
 from game_advanced import GamePlay, Player, Dealer, Deck
 
 
-number_of_decks = 6
+number_of_decks = 8
 blackjack_multiplier = 1.5
 
 
