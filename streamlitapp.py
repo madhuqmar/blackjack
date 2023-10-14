@@ -6,7 +6,6 @@ from game_advanced import GamePlay, Player, Dealer, Deck
 number_of_decks = 8
 blackjack_multiplier = 1.5
 
-
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def start_game():
     game_deck = Deck(number_of_decks)
@@ -18,7 +17,9 @@ def start_game():
 
 game_deck, dealer, player, game_play = start_game()
 
-st.title('BlackJack Simulator')
+#------------------------------------------
+
+st.title('Welcome to this Virtual Lucky 8 Blackjack Table!')
 
 if st.button('New hand?'):
     game_play.deal_in()
