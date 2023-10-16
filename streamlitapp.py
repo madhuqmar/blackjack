@@ -24,14 +24,6 @@ st.title('Welcome to this Virtual Lucky 8 Blackjack Table!')
 bet_amount = st.selectbox("Select your bet amount", [50, 100, 200])
 st.write("You chose to bet:", bet_amount)
 
-# You can perform actions based on the selected option
-if bet_amount == 50:
-    st.write("You chose to bet $50.")
-elif bet_amount == 100:
-    st.write("You chose to bet $100.")
-else:
-    st.write("You chose to bet $200.")
-
 
 if st.button('Play with my bets'):
     game_play.deal_in()
