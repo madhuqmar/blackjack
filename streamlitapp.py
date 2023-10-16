@@ -21,8 +21,8 @@ game_deck, dealer, player, game_play = start_game()
 
 st.title('Welcome to this Virtual Lucky 8 Blackjack Table!')
 
-bet_amount = st.selectbox("Select your bet amount", [50, 100, 200])
-st.write("You chose to bet:", "${}".format(bet_amount))
+bet_amount = st.selectbox("Select your bet amount", ["$50", "$100", "$200"])
+st.write("You chose to bet:", bet_amount)
 
 
 if st.button('Play with my bets'):
