@@ -177,7 +177,7 @@ class GamePlay:
         self.commentary = ""
 
     def __repr__(self):
-        return "Commentary: {}".format(self.commentary)
+        return self.commentary
     
     def dealer_turn(self):
         self.dealer.hit(self.game_deck)
