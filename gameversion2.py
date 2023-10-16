@@ -192,8 +192,7 @@ class GamePlay:
             self.commentary = 'Dealer has a soft 17, Dealer has to hit'
             self.dealer_turn()
         else:
-            self.commentary.append(
-                'Dealer is proceeding with {}'.format(self.dealer.best_outcome))
+            self.commentary = 'Dealer is proceeding with {}'.format(self.dealer.best_outcome)
 
     def update(self):
         if len(self.player.possible_actions) == 0:
