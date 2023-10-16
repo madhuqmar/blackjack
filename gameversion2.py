@@ -199,8 +199,7 @@ class GamePlay:
     def update(self):
         if len(self.player.possible_actions) == 0:
             if self.player.best_outcome == 'Bust':
-                self.commentary = 
-                    "Player busted. No need for Dealer to go. Player loses their initial bet"
+                self.commentary = "Player busted. No need for Dealer to go. Player loses their initial bet"
             elif self.player.best_outcome == 'Blackjack' and self.dealer.cards[0].rank not in [1, 10]:
                 self.commentary = "Player has Blackjack. Dealer has no chance to hit Blackjack. Player wins {} times their initial bet".format(
                     str(self.blackjack_multiplier))
