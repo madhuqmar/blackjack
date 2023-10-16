@@ -1,6 +1,6 @@
 from PIL import Image
 import streamlit as st
-from game_advanced import GamePlay, Player, Dealer, Deck
+from gameversion2 import GamePlay, Player, Dealer, Deck
 
 
 number_of_decks = 8
@@ -21,9 +21,8 @@ game_deck, dealer, player, game_play = start_game()
 
 st.title('Welcome to this Virtual Lucky 8 Blackjack Table!')
 
-if st.button('New hand?'):
+if st.button('Play with my bets'):
     game_play.deal_in()
-
 
 player_stats = st.empty()
 player_images = st.empty()
