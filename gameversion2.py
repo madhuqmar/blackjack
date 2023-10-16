@@ -137,28 +137,28 @@ class Player:
     
     def stand(self, game_play):
         self.possible_actions = []
-        game_play.commentary.append('Player is standing')
+        game_play.commentary = 'Player is standing'
     
     def double_down(self, game_deck, game_play):
         self.hit(game_deck)
-        game_play.commentary.append('Player is doubling down')
+        game_play.commentary = 'Player is doubling down'
         self.possible_actions = []
     
     def player_hit(self, game_deck, game_play):
         self.hit(game_deck)
-        game_play.commentary.append('Player has hit')
+        game_play.commentary = 'Player has hit'
         self.get_possibilities(game_play)
     
     def get_possibilities(self, game_play):
         if self.best_outcome in ['Blackjack', 'Bust', 21]:
             self.possible_actions = []
-            game_play.commentary.append('Player has no options')
+            game_play.commentary = 'Player has no options'
         elif len(self.cards) == 2:
             self.possible_actions = ['Hit', 'Stand', 'Double Down']
-            game_play.commentary.append('Player can sitll hit, double down or stand')
+            game_play.commentary = 'Player can sitll hit, double down or stand'
         else:
             self.possible_actions = ['Hit', 'Stand']
-            game_play.commentary.append('Player can still hit or stand')
+            game_play.commentary = 'Player can still hit or stand'
 
     def reset(self):
         self.cards = []
