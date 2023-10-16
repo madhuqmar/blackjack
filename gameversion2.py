@@ -226,7 +226,7 @@ class GamePlay:
             pass 
         
     def reset(self):
-        self.commentary = "Game is yet to begin..."
+        self.commentary = " "
 
     def deal_in(self):
         self.dealer.reset()
