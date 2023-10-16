@@ -25,9 +25,9 @@ bet_amount = st.selectbox("Select your bet amount", [50, 100, 200])
 st.write("You chose to bet:", bet_amount)
 
 # You can perform actions based on the selected option
-if selected_option == "50:
+if selected_option == 50:
     st.write("You chose to bet $50.")
-elif selected_option == "100":
+elif selected_option == 100:
     st.write("You chose to bet $100.")
 else:
     st.write("You chose to bet $200.")
