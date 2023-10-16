@@ -207,20 +207,16 @@ class GamePlay:
                 self.commentary.append("Dealer turn can proceed as normal")
                 self.dealer_turn()
                 if self.dealer.best_outcome == 'Bust':
-                    self.commentary = 
-                        "Dealer busted. Player wins their initial bet"
+                    self.commentary = "Dealer busted. Player wins their initial bet"
                 elif self.dealer.best_outcome == 'Blackjack' and self.player.best_outcome == 'Blackjack':
-                    self.commentary =
-                        "Dealer and Player both have Blackjack. Player retains their initial bet"
+                    self.commentary = "Dealer and Player both have Blackjack. Player retains their initial bet"
                 elif self.dealer.best_outcome == 'Blackjack' and self.player.best_outcome != 'Blackjack':
-                    self.commentary = 
-                        "Dealer has Blackjack. Player loses their initial bet"
+                    self.commentary = "Dealer has Blackjack. Player loses their initial bet"
                 elif self.dealer.best_outcome != 'Blackjack' and self.player.best_outcome == 'Blackjack':
                     self.commentary = "Player has Blackjack. Player wins {} times their initial bet".format(
                         str(self.blackjack_multiplier))
                 elif int(self.dealer.best_outcome) == int(self.player.best_outcome):
-                    self.commentary =
-                        "Dealer and Player have same score. Player retains their initial bet"
+                    self.commentary = "Dealer and Player have same score. Player retains their initial bet"
                 elif int(self.dealer.best_outcome) > int(self.player.best_outcome):
                     self.commentary = "Dealer has {} whereas Player has {}. Player loses their initial bet".format(
                         str(self.dealer.best_outcome), str(self.player.best_outcome))
