@@ -186,7 +186,7 @@ class GamePlay:
         elif self.dealer.best_outcome == 'Bust':
             self.commentary = 'Dealer went Bust'
         elif int(self.dealer.best_outcome) < 17:
-            self.commentary = 'Dealer has {}, Dealer has to hit'.format(self.dealer.best_outcome))
+            self.commentary = 'Dealer has {}, Dealer has to hit'.format(self.dealer.best_outcome)
             self.dealer_turn()
         elif int(self.dealer.best_outcome) == 17 and 1 in [card.rank for card in self.dealer.cards]:
             self.commentary = 'Dealer has a soft 17, Dealer has to hit'
