@@ -186,8 +186,7 @@ class GamePlay:
         elif self.dealer.best_outcome == 'Bust':
             self.commentary = 'Dealer went Bust'
         elif int(self.dealer.best_outcome) < 17:
-            self.commentary.append(
-                'Dealer has {}, Dealer has to hit'.format(self.dealer.best_outcome))
+            self.commentary = 'Dealer has {}, Dealer has to hit'.format(self.dealer.best_outcome))
             self.dealer_turn()
         elif int(self.dealer.best_outcome) == 17 and 1 in [card.rank for card in self.dealer.cards]:
             self.commentary = 'Dealer has a soft 17, Dealer has to hit'
@@ -204,7 +203,7 @@ class GamePlay:
                 self.commentary = "Player has Blackjack. Dealer has no chance to hit Blackjack. Player wins {} times their initial bet".format(
                     str(self.blackjack_multiplier))
             else:
-                self.commentary.append("Dealer turn can proceed as normal")
+                self.commentary = "Dealer turn can proceed as normal"
                 self.dealer_turn()
                 if self.dealer.best_outcome == 'Bust':
                     self.commentary = "Dealer busted. Player wins their initial bet"
@@ -228,7 +227,7 @@ class GamePlay:
             pass 
         
     def reset(self):
-        self.commentary = ""
+        self.commentary = "Game is yet to begin..."
 
     def deal_in(self):
         self.dealer.reset()
