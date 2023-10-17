@@ -169,12 +169,20 @@ class Player:
 
 
 class GamePlay:
-    def __init__(self, player, dealer, game_deck, blackjack_multiplier):
+    def __init__(self, player, dealer, game_deck, blackjack_multiplier, bet_amount):
         self.player = player
         self.dealer = dealer
         self.game_deck = game_deck 
         self.blackjack_multiplier = blackjack_multiplier 
         self.commentary = ""
+        self.bet_amount = bet_amount
+
+        if self.bet_amount = "$50":
+            self.bet = 50
+        if self.bet_amount = "$100":
+            self.bet = 100
+        if self.bet_amount = "$200":
+            self.bet = 200
 
     def __repr__(self):
         return self.commentary
@@ -197,10 +205,10 @@ class GamePlay:
     def update(self):
         if len(self.player.possible_actions) == 0:
             if self.player.best_outcome == 'Bust':
-                self.commentary = "Player busted. No need for Dealer to go. Player loses their initial bet"
+                self.commentary = "Player busted. Player loses their initial bet"
             elif self.player.best_outcome == 'Blackjack' and self.dealer.cards[0].rank not in [1, 10]:
-                self.commentary = "Player has Blackjack. Dealer has no chance to hit Blackjack. Player wins {} times their initial bet".format(
-                    str(self.blackjack_multiplier))
+                self.commentary = "Player has Blackjack. Dealer has no chance to hit Blackjack. Player wins ${} dollars!".format(
+                    str(self.blackjack_multiplier * self.bet))
             else:
                 self.commentary = "Dealer turn can proceed as normal"
                 self.dealer_turn()
