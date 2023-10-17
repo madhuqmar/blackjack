@@ -6,12 +6,15 @@ from gameversion2 import GamePlay, Player, Dealer, Deck
 number_of_decks = 8
 blackjack_multiplier = 1.5
 
+bet_amount = st.selectbox("Select your bet amount", ["$50", "$100", "$200"])
+st.write("You chose to bet:", bet_amount)
+
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def start_game():
     game_deck = Deck(number_of_decks)
     dealer = Dealer()
     player = Player()
-    game_play = GamePlay(player, dealer, game_deck, blackjack_multiplier)
+    game_play = GamePlay(player, dealer, game_deck, blackjack_multiplier, bet_amount)
     return game_deck, dealer, player, game_play
 
 
@@ -21,8 +24,7 @@ game_deck, dealer, player, game_play = start_game()
 
 st.title('Welcome to this Virtual Lucky 8 Blackjack Table!')
 
-bet_amount = st.selectbox("Select your bet amount", ["$50", "$100", "$200"])
-st.write("You chose to bet:", bet_amount)
+
 
 
 if st.button('Play with my bets'):
