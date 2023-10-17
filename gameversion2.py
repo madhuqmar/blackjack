@@ -177,11 +177,11 @@ class GamePlay:
         self.commentary = ""
         self.bet_amount = bet_amount
 
-        if self.bet_amount = "$50":
+        if self.bet_amount == "$50":
             self.bet = 50
-        if self.bet_amount = "$100":
+        if self.bet_amount == "$100":
             self.bet = 100
-        if self.bet_amount = "$200":
+        if self.bet_amount == "$200":
             self.bet = 200
 
     def __repr__(self):
