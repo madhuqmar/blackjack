@@ -205,7 +205,7 @@ class GamePlay:
     def update(self):
         if len(self.player.possible_actions) == 0:
             if self.player.best_outcome == 'Bust':
-                self.commentary = "Player busted. Player loses ${}".format(self.bet)
+                self.commentary = "Player busted. Player loses ${}".format(str(self.bet))
             elif self.player.best_outcome == 'Blackjack' and self.dealer.cards[0].rank not in [1, 10]:
                 self.commentary = "Player has Blackjack. Dealer has no chance to hit Blackjack. Player wins ${} dollars!".format(
                     str(self.blackjack_multiplier * self.bet))
@@ -213,11 +213,11 @@ class GamePlay:
                 self.commentary = "Dealer turn can proceed as normal"
                 self.dealer_turn()
                 if self.dealer.best_outcome == 'Bust':
-                    self.commentary = "Dealer busted. Player wins their initial bet"
+                    self.commentary = "Dealer busted. Player wins ${}".format(str(self.bet))
                 elif self.dealer.best_outcome == 'Blackjack' and self.player.best_outcome == 'Blackjack':
-                    self.commentary = "Dealer and Player both have Blackjack. Player retains their initial bet"
+                    self.commentary = "Dealer and Player both have Blackjack. Player takes back ${}".format(str(self.bet))
                 elif self.dealer.best_outcome == 'Blackjack' and self.player.best_outcome != 'Blackjack':
-                    self.commentary = "Dealer has Blackjack. Player loses their initial bet"
+                    self.commentary = "Dealer has Blackjack. Player loses ${}".format(str(self.bet))
                 elif self.dealer.best_outcome != 'Blackjack' and self.player.best_outcome == 'Blackjack':
                     self.commentary = "Player has Blackjack. Player wins {} times their initial bet".format(
                         str(self.blackjack_multiplier * self.bet))
