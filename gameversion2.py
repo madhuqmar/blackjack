@@ -227,8 +227,8 @@ class GamePlay:
                     self.commentary = "Dealer has {} whereas Player has {}. Player loses their initial bet".format(
                         str(self.dealer.best_outcome), str(self.player.best_outcome))
                 else:
-                    self.commentary = "Dealer has {} whereas Player has {}. Player wins their initial bet".format(
-                        str(self.dealer.best_outcome), str(self.player.best_outcome))
+                    self.commentary = "Dealer has {} whereas Player has {}. Player wins {})".format(
+                        str(self.dealer.best_outcome), str(self.player.best_outcome), str(bet * 2))
 
         else:
             pass 
