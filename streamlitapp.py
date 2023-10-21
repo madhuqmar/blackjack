@@ -24,7 +24,7 @@ game_deck, dealer, player, game_play = start_game()
 
 st.title('Welcome to this Virtual Lucky 8 Blackjack Table!')
 
-
+st.header('Current Win Amount':{}.format(0))
 
 
 if st.button('Play with my bets'):
