@@ -27,6 +27,7 @@ st.header('Current Win Amount: ${}'.format(current_amount))
 st.write("You chose to bet:", bet_amount)
 st.divider()
 
+st.metric(label="Pockets", value=current_amount, delta="$200")
 
 if st.button('Play with my bets'):
     game_play.deal_in()
