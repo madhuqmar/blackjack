@@ -22,6 +22,8 @@ game_deck, dealer, player, game_play = start_game()
 
 st.title('Welcome to this Virtual Lucky 8 Blackjack Table! You get to start with $1000')
 
+st.divider()
+
 current_amount = 1000
 st.header('Current Win Amount: ${}'.format(current_amount))
 
