@@ -22,14 +22,14 @@ game_deck, dealer, player, game_play = start_game()
 
 #------------------------------------------
 current_amount = 1000
- # st.header('Current Win Amount: ${}'.format(current_amount))
-
-st.write("You chose to bet:", bet_amount)
+# st.header('Current Win Amount: ${}'.format(current_amount))
+#st.write("You chose to bet:", bet_amount)
 st.divider()
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 col1.metric(label="Pockets", value=current_amount, delta="$200")
 col2.metric(label="Bets", value=bet_amount, delta="$200")
+col2.metric(label="Last Outcome", value="Win", delta="$200")
 
 if st.button('Play with my bets'):
     game_play.deal_in()
