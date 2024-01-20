@@ -10,37 +10,40 @@ st.subheader("You get to start with $1000")
 
 st.divider()
 
+# Initialize session state variables
+if 'current_amount' not in st.session_state:
+    st.session_state.current_amount = 1000
+
+if 'bet_amount' not in st.session_state:
+    st.session_state.bet_amount = 0
+
 @st.cache_resource()
 def start_game():
     game_deck = Deck(number_of_decks)
     dealer = Dealer()
     player = Player()
-    game_play = GamePlay(player, dealer, game_deck, blackjack_multiplier, selected_bet_amount)
+    game_play = GamePlay(player, dealer, game_deck, blackjack_multiplier, st.session_state.bet_amount)
     return game_deck, dealer, player, game_play
-
 
 def main():
 
-    game_deck, dealer, player, game_play = start_game()
-
-    #------------------------------------------
-    current_amount = 1000
-    # st.header('Current Win Amount: ${}'.format(current_amount))
-    #st.write("You chose to bet:", bet_amount)
-
+    last_outcome = 'Awaiting Play'
 
     bet_amounts = [0, 50, 100, 200]
     selected_bet_amount = st.selectbox("Select your bet amount", bet_amounts)
 
+    game_deck, dealer, player, game_play = start_game()
+
     if st.button('Play with my bets'):
         game_play.deal_in()
-        st.session_state.bet_amount += selected_bet_amount
-
+        st.session_state.bet_amount = selected_bet_amount
+        st.session_state.current_amount -= selected_bet_amount
+        
+        
     col1, col2, col3 = st.columns(3)
-    col1.metric(label="Pockets", value=current_amount, delta="$200")
-    col2.metric(label="Bets", value=st.session_state.bet_amount, delta="$200")
-    col3.metric(label="Last Outcome", value="Win", delta="$200")
-
+    col1.metric(label="Pockets", value=st.session_state.current_amount, delta="$200")
+    col2.metric(label="Current Bet", value=st.session_state.bet_amount, delta="$200")
+    col3.metric(label="Last Outcome", value=last_outcome, delta="$200")
 
 
     player_stats = st.empty()
@@ -58,12 +61,14 @@ def main():
             player.player_hit(game_deck, game_play)
             if 'Hit' not in player.possible_actions:
                 player_hit_option.empty()
+
     if 'Double Down' in player.possible_actions:
         if player_double_down_option.button('Double Down'):
             player.double_down(game_deck, game_play)
             player_double_down_option.empty()
             player_hit_option.empty()
             player_stand_option.empty()
+            
     if 'Stand' in player.possible_actions:
         if player_stand_option.button('Stand'):
             player.stand(game_play)
