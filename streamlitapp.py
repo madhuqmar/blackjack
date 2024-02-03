@@ -10,6 +10,7 @@ st.subheader("You get to start with $1000")
 
 st.divider()
 
+<<<<<<< Updated upstream
 # Initialize session state variables
 if 'current_amount' not in st.session_state:
     st.session_state.current_amount = 1000
@@ -17,6 +18,8 @@ if 'current_amount' not in st.session_state:
 if 'bet_amount' not in st.session_state:
     st.session_state.bet_amount = 0
 
+=======
+>>>>>>> Stashed changes
 @st.cache_resource()
 def start_game():
     game_deck = Deck(number_of_decks)
@@ -32,7 +35,14 @@ def main():
     bet_amounts = [0, 50, 100, 200]
     selected_bet_amount = st.selectbox("Select your bet amount", bet_amounts)
 
+<<<<<<< Updated upstream
     game_deck, dealer, player, game_play = start_game()
+=======
+col1, col2, col3 = st.columns(3)
+col1.metric(label="Pockets", value=current_amount, delta="$200")
+col2.metric(label="Bets", value=bet_amount, delta="$200")
+col3.metric(label="Last Outcome", value="Win", delta="$200")
+>>>>>>> Stashed changes
 
     if st.button('Play with my bets'):
         game_play.deal_in()
