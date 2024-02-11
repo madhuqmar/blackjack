@@ -10,12 +10,18 @@ st.subheader("You get to start with $1000")
 
 st.divider()
 
+### TRACKING PLAYER POCKETS ###
+
+if 'current_amount' not in st.session_state:  # if game not started
+    st.session_state.current_amount = 1000
+
+
 ### TRACKING BET AMOUNTS ###
 
 if 'bet_amount' not in st.session_state:
     st.session_state.bet_amount = 0
 
-bet_amounts = [0, 50, 100, 200]
+bet_amounts = [0, 25, 50, 100, 200]
 
 selected_bet_amount = st.selectbox("Select your bet amount", bet_amounts, index=bet_amounts.index(st.session_state.bet_amount))
 
@@ -34,16 +40,11 @@ if 'last_outcome_score' not in st.session_state:
     st.session_state.last_outcome_score = 0
 
 
-### TRACKING PLAYER POCKETS ###
-
-if 'current_amount' not in st.session_state:  # if game not started
-    st.session_state.current_amount = 1000
-
-
 
 def main():
 
     st.write(st.session_state.bet_amount)
+
 
     @st.cache_resource()
     def start_game(bet_amount):
@@ -59,8 +60,9 @@ def main():
     if st.button('Play with my bets'):
         game_play.deal_in()
         st.session_state.current_amount -= st.session_state.bet_amount
-        # st.session_state.game_processed = False
     
+
+
     col1, col2, col3 = st.columns(3)
 
     col1.metric(label="Pockets", value=f"${st.session_state.current_amount:,.2f}", delta=0)
@@ -118,13 +120,11 @@ def main():
     st.write(st.session_state.last_outcome_score)
     st.write(st.session_state.last_bet_amount)
 
-
-
-    # Only update current amount if the current game hasn't been processed yet and the outcome is a win
     if st.session_state.last_outcome_score == 1:
         st.session_state.current_amount += game_play.player_win_amount
     elif st.session_state.last_outcome_score == 2:
-         st.session_state.current_amount += game_play.bet_amount
+        st.session_state.current_amount += game_play.bet_amount
+
 
     player_stats.write(player)
     player_images.image([Image.open(card.image_location)
