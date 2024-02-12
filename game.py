@@ -7,7 +7,7 @@ class Card:
 
         if self.rank == 1:
             self.card_scores = [1, 11]
-        elif self.rank > 11 and self.rank <= 14:
+        elif self.rank >= 11 and self.rank <= 14:
             self.card_scores = [10, 10]
         else:
             self.card_scores = [self.rank, self.rank]
@@ -152,6 +152,7 @@ class Player:
     def double_down(self, game_deck, game_play):
         self.hit(game_deck)
         game_play.commentary = 'Player is doubling down'
+        game_play.bet_amount *= 2
         self.possible_actions = []
     
     def player_hit(self, game_deck, game_play):
@@ -188,7 +189,7 @@ class GamePlay:
         self.blackjack_multiplier = blackjack_multiplier 
         self.bet_amount = bet_amount
         self.commentary = ""
-        self.player_win = "Game"
+        self.player_win = "awaiting game"
         self.player_win_amount = 0
         self.is_game_over = False
 
@@ -276,7 +277,6 @@ class GamePlay:
 
     def reset(self):
         self.commentary = " "
-        # self.player_win = "Game"
         self.player_win_amount = 0
         self.is_game_over = False
 

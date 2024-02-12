@@ -65,9 +65,12 @@ def main():
     col1, col2, col3 = st.columns(3)
 
     col1.metric(label="Pockets", value=f"${st.session_state.current_amount:,.2f}", delta=0)
-    col2.metric(label="Current Bet", value=f"${st.session_state.bet_amount:,.2f}", delta=st.session_state.bet_amount - st.session_state.last_bet_amount)
+
+    col2.metric(label="Current Bet", value=f"${game_play.bet_amount:,.2f}", delta=game_play.bet_amount - st.session_state.last_bet_amount)
+
     col3.metric(label="Last Outcome", value=st.session_state.last_outcome, delta=st.session_state.last_outcome_score)
                 
+    st.session_state.bet_amount = game_play.bet_amount
 
     player_stats = st.empty()
     player_images = st.empty()
@@ -87,7 +90,12 @@ def main():
 
     if 'Double Down' in player.possible_actions:
         if player_double_down_option.button('Double Down'):
+
             player.double_down(game_deck, game_play)
+            st.session_state.bet_amount = game_play.bet_amount
+
+            st.experimental_rerun()
+
             player_double_down_option.empty()
             player_hit_option.empty()
             player_stand_option.empty()
@@ -100,7 +108,8 @@ def main():
             player_stand_option.empty()
     
     game_play.update()
-    
+
+    st.session_state.bet_amount = game_play.bet_amount
 
     #Update user metrics
     st.session_state.last_outcome = game_play.player_win
