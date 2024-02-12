@@ -25,10 +25,9 @@ bet_amounts = [0, 25, 50, 100, 200]
 
 selected_bet_amount = st.selectbox("Select your bet amount", bet_amounts, index=bet_amounts.index(st.session_state.bet_amount))
 
-st.session_state.bet_amount = selected_bet_amount
-
 if 'last_bet_amount' not in st.session_state:
     st.session_state.last_bet_amount = 0
+    st.session_state.current_amount -= st.session_state.bet_amount
 
 
 ### TRACKING PLAYER GAME OUTCOMES ###
@@ -43,8 +42,6 @@ if 'last_outcome_score' not in st.session_state:
 
 def main():
 
-    st.write(st.session_state.bet_amount)
-
 
     @st.cache_resource()
     def start_game(bet_amount):
@@ -53,14 +50,16 @@ def main():
         player = Player()
         game_play = GamePlay(player, dealer, game_deck, blackjack_multiplier, bet_amount)
         return game_deck, dealer, player, game_play
-        st.write(st.session_state.bet_amount)
+    
 
-    game_deck, dealer, player, game_play = start_game(st.session_state.bet_amount)
+    game_deck, dealer, player, game_play = start_game(selected_bet_amount)
 
     if st.button('Play with my bets'):
         game_play.deal_in()
-        st.session_state.current_amount -= st.session_state.bet_amount
-    
+        if selected_bet_amount:
+            st.session_state.bet_amount = selected_bet_amount
+            st.write(st.session_state.bet_amount)
+            st.session_state.current_amount -= st.session_state.bet_amount
 
 
     col1, col2, col3 = st.columns(3)
@@ -101,6 +100,7 @@ def main():
             player_stand_option.empty()
     
     game_play.update()
+    
 
     #Update user metrics
     st.session_state.last_outcome = game_play.player_win
@@ -120,9 +120,9 @@ def main():
     st.write(st.session_state.last_outcome_score)
     st.write(st.session_state.last_bet_amount)
 
-    if st.session_state.last_outcome_score == 1:
+    if game_play.player_win == "Win":
         st.session_state.current_amount += game_play.player_win_amount
-    elif st.session_state.last_outcome_score == 2:
+    elif game_play.player_win == "Push":
         st.session_state.current_amount += game_play.bet_amount
 
 

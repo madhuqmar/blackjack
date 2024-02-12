@@ -190,6 +190,7 @@ class GamePlay:
         self.commentary = ""
         self.player_win = "Game"
         self.player_win_amount = 0
+        self.is_game_over = False
 
     
     def dealer_turn(self):
@@ -211,6 +212,12 @@ class GamePlay:
         else:
             self.commentary = 'Dealer is proceeding with {}'.format(self.dealer.best_outcome)
 
+    def check_game_over(self):
+        if len(self.player.possible_actions) == 0:
+           self.is_game_over = True
+        else:
+           self.is_game_over = False
+        return self.is_game_over
 
     def update(self):
         if len(self.player.possible_actions) == 0:
@@ -226,7 +233,7 @@ class GamePlay:
 
             else:
                 self.commentary = "Dealer turn can proceed as normal"
-                self.player_win = "Game"
+                # self.player_win = "Game"
                 self.dealer_turn()
 
                 if self.dealer.best_outcome == 'Bust':
@@ -269,8 +276,9 @@ class GamePlay:
 
     def reset(self):
         self.commentary = " "
-        self.player_win = "Game"
+        # self.player_win = "Game"
         self.player_win_amount = 0
+        self.is_game_over = False
 
     def deal_in(self):
         self.dealer.reset()
@@ -284,7 +292,4 @@ class GamePlay:
         
         self.player.player_hit(self.game_deck, self)
         self.player.get_possibilities(self)
-
-
-
         
