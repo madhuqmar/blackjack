@@ -50,6 +50,20 @@ class Card:
         else:
             true_rank = str(self.rank)
         return '{} of {}'.format(true_rank, self.suit)
+    
+    def get_number(self, rank):
+        if self.rank == 1:
+            number = 1
+        elif self.rank == 11:
+            number = 10
+        elif self.rank == 12:
+            number = 10
+        elif self.rank == 13:
+            number = 10
+        else:
+            number = self.rank
+        return number
+
 
 
 suits = ('Spades', 'Hearts', 'Clubs', 'Diamonds')
@@ -84,6 +98,7 @@ class Dealer:
         self.cards = []
         self.hand_scores = [0, 0]
         self.best_outcome = 'Awaiting deal'
+        self.card_scores = [0, 0]
     
     def __repr__(self):
         return 'Dealer Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards, list(set(self.hand_scores)), self.best_outcome)
@@ -92,6 +107,7 @@ class Dealer:
         draw_card = game_deck.draw()
         self.cards.append(draw_card)
         card_scores = draw_card.card_scores
+        self.card_scores = card_scores
         self.hand_scores = [a + b for a, b in zip(self.hand_scores, card_scores)]
 
         if len(self.cards) <= 1:
@@ -105,7 +121,7 @@ class Dealer:
 
         else:
             self.best_outcome = max([i for i in self.hand_scores if i <= 21])
-        
+
     def reset(self):
         self.cards.clear()
         self.hand_scores = [0, 0]
@@ -119,6 +135,7 @@ class Player:
         self.best_outcome = 'Awaiting deal'
         self.possible_actions = ['No deal yet']
         self.doubled_down = 'No'
+        self.card_scores = [0, 0]
     
     def __repr__(self):
         return 'Player Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards, list(set(self.hand_scores)),
@@ -128,6 +145,7 @@ class Player:
         draw_card = game_deck.draw()
         self.cards.append(draw_card)
         card_scores = draw_card.card_scores
+        self.card_scores = card_scores
         self.hand_scores = [a + b for a, b in zip(self.hand_scores, card_scores)]
 
         if len(self.cards) <= 1:
@@ -161,8 +179,8 @@ class Player:
         split_card = self.cards.pop(1)
         new_hand = Player()
         new_hand.cards.append(split_card)
-        new_hand.hit(game_deck)
-        self.hit(game_deck)  # Continue with hitting on the original hand
+        # new_hand.hit(game_deck)
+        # self.hit(game_deck)  # Continue with hitting on the original hand
         self.get_possibilities(game_play)
         return new_hand
     
@@ -176,11 +194,11 @@ class Player:
             self.possible_actions = []
             game_play.commentary = 'Player has no more options'
 
-        elif len(self.cards) == 2 and self.cards[0].rank != self.cards[1].rank:
-            self.possible_actions = ['Hit', 'Stand', 'Double Down', 'SPLIT']
-            game_play.commentary = 'Player can still hit, double down, or stand SPL'
+        elif len(self.cards) == 2 and self.cards[0].get_number(self.cards[0].rank) != self.cards[1].get_number(self.cards[1].rank):
+            self.possible_actions = ['Hit', 'Stand', 'Double Down']
+            game_play.commentary = 'Player can still hit, double down, or stand'
         
-        elif len(self.cards) == 2 and self.cards[0].rank == self.cards[1].rank:
+        elif len(self.cards) == 2 and self.cards[0].get_number(self.cards[0].rank) == self.cards[1].get_number(self.cards[1].rank):
             self.possible_actions = ['Hit', 'Stand', 'Double Down', 'Split']
             game_play.commentary = 'Player can still hit, split, double down, or stand'
 
@@ -209,23 +227,26 @@ class GamePlay:
 
     
     def dealer_turn(self):
-        self.dealer.hit(self.game_deck)
+        while True:
+            self.dealer.hit(self.game_deck)
 
-        if self.dealer.best_outcome == 'Blackjack':
-            self.commentary = 'Dealer hit Blackjack'
+            if self.dealer.best_outcome == 'Blackjack':
+                self.commentary = 'Dealer hit Blackjack'
+                break  # Exit the loop if the dealer gets Blackjack
 
-        elif self.dealer.best_outcome == 'Bust':
-            self.commentary = 'Dealer went Bust'
+            elif self.dealer.best_outcome == 'Bust':
+                self.commentary = 'Dealer went Bust'
+                break  # Exit the loop if the dealer goes Bust
 
+            elif int(self.dealer.best_outcome) < 17:
+                self.commentary = 'Dealer has {}, Dealer has to hit'.format(self.dealer.best_outcome)
 
-        elif int(self.dealer.best_outcome) < 17:
-            self.commentary = 'Dealer has {}, Dealer has to hit'.format(self.dealer.best_outcome)
+            elif int(self.dealer.best_outcome) == 17 and 1 in [card.rank for card in self.dealer.cards]:
+                self.commentary = 'Dealer has a soft 17, Dealer has to hit'
 
-        elif int(self.dealer.best_outcome) == 17 and 1 in [card.rank for card in self.dealer.cards]:
-            self.commentary = 'Dealer has a soft 17, Dealer has to hit'
-
-        else:
-            self.commentary = 'Dealer is proceeding with {}'.format(self.dealer.best_outcome)
+            else:
+                self.commentary = 'Dealer is proceeding with {}'.format(self.dealer.best_outcome)
+                break  # Exit the loop if the dealer's hand is 17 or higher
 
     def check_game_over(self):
         if len(self.player.possible_actions) == 0:
@@ -282,7 +303,7 @@ class GamePlay:
                     self.player_win = "Blackjack"
                     self.player_win_amount = self.blackjack_multiplier * self.initial_bet_amount
 
-                elif int(self.dealer.best_outcome) == int(self.player.best_outcome):
+                elif self.dealer.best_outcome == self.player.best_outcome:
                     self.commentary = "Dealer and Player have same score. Player takes back ${}".format(str(self.initial_bet_amount))
                     self.player_win = "Push"
 

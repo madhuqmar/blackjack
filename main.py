@@ -56,7 +56,7 @@ with maincol1:
     if 'last_outcome_score' not in st.session_state:
         st.session_state.last_outcome_score = 0
 
-
+    ## INITIALIZE GAME ###
     st.session_state.bet_amount = selected_bet_amount
     game_deck, dealer, player, game_play = start_game(st.session_state.bet_amount)
 
@@ -95,53 +95,14 @@ with maincol2:
 
     player_hit_option = st.empty()
     player_double_down_option = st.empty()
-    player_stand_option = st.empty()
     player_split_option = st.empty()
+    player_stand_option = st.empty()
 
-    st.write("**Dealer Spread**")
+    
     dealer_stats = st.empty()
     dealer_images = st.empty()
-
-
-    if 'Hit' in player.possible_actions:
-        if player_hit_option.button('Hit'):
-            player.player_hit(game_deck, game_play)
-            if 'Hit' not in player.possible_actions:
-                player_hit_option.empty()
-
-    if 'Double Down' in player.possible_actions:
-        if player_double_down_option.button('Double Down'):
-            player.double_down(game_deck, game_play)
-            st.session_state.current_amount -= st.session_state.bet_amount
-            st.session_state.bet_amount = st.session_state.bet_amount * 2
-
-            update_metrics(metrics, current_amount = st.session_state.current_amount, 
-                                    bet_amount = st.session_state.bet_amount, 
-                                    last_bet_amount = st.session_state.last_bet_amount, 
-                                    last_outcome = st.session_state.last_outcome, 
-                                    last_outcome_score=st.session_state.last_outcome_score)
-
-        
-            player_double_down_option.empty()
-            player_hit_option.empty()
-            player_stand_option.empty()
-
-
-    if 'Split' in player.possible_actions:
-        if player_split_option.button('Split'):
-            player.split(game_deck, game_play)
-            player_split_option.empty()
-        
-    if 'Stand' in player.possible_actions:
-        if player_stand_option.button('Stand'):
-            player.stand(game_play)
-            player_hit_option.empty()
-            player_double_down_option.empty()
-            player_stand_option.empty()
-
-
-    game_play.check_game_over()
-    game_play.update()
+    dealer_stats.write("**Dealer Spread**")
+    
 
 
     #WRITE GAME PLAY RESULTS
@@ -152,6 +113,108 @@ with maincol2:
     # dealer_stats.write(dealer)
     dealer_images.image([Image.open(card.image_location)
                         for card in dealer.cards], width=100)
+
+
+    player_hit_option, player_double_down_option, player_split_option, player_stand_option = st.columns([1, 1.1, 1.2, 1.3])
+
+    if 'Hit' in player.possible_actions:
+        if player_hit_option.button('Hit'):
+                player.player_hit(game_deck, game_play)
+                if 'Hit' not in player.possible_actions:
+                    player_hit_option.empty()
+
+    if 'Double Down' in player.possible_actions:
+        if player_double_down_option.button('Double Down'):
+                player.double_down(game_deck, game_play)
+                st.session_state.current_amount -= st.session_state.bet_amount
+                st.session_state.bet_amount = st.session_state.bet_amount * 2
+
+                update_metrics(metrics, current_amount = st.session_state.current_amount, 
+                                        bet_amount = st.session_state.bet_amount, 
+                                        last_bet_amount = st.session_state.last_bet_amount, 
+                                        last_outcome = st.session_state.last_outcome, 
+                                        last_outcome_score=st.session_state.last_outcome_score)
+
+            
+                player_double_down_option.empty()
+                player_hit_option.empty()
+                player_stand_option.empty()
+
+    if 'Split' in player.possible_actions:
+        if player_split_option.button('Split'):
+            # player_images = st.empty()
+            
+            # Split the player's hand
+            new_hand = player.split(game_deck, game_play)
+            
+            # Display the cards of the original hand
+            player_images.image([Image.open(card.image_location) for card in player.cards], width=100)
+
+            # Display the cards of the new hand
+            st.write("**New Hand After Split**")
+            new_hand_images = st.empty()
+            new_hand_images.image([Image.open(card.image_location) for card in new_hand.cards], width=100)
+
+
+            # Empty the split button
+            player_split_option.empty()
+
+
+            dealer_images.empty()
+            dealer_stats.empty()
+
+            dealer_stats_new = st.empty()
+            dealer_stats_new.write("**Dealer Spread**")
+            dealer_images_new = st.empty()
+            dealer_images_new.image([Image.open(card.image_location)
+                                for card in dealer.cards], width=100)
+
+            new_hand_hit_option, new_hand_double_down_option, new_hand_stand_option = st.columns([1, 1.1, 1.2])
+            if 'Hit' in new_hand.possible_actions:
+                if new_hand_hit_option.button('Hit'):
+                        new_hand.player_hit(game_deck, game_play)
+                        if 'Hit' not in new_hand.possible_actions:
+                            new_handr_hit_option.empty()
+
+            if 'Double Down' in new_hand.possible_actions:
+                if new_hand_double_down_option.button('Double Down'):
+                        new_hand.double_down(game_deck, game_play)
+                        st.session_state.current_amount -= st.session_state.bet_amount
+                        st.session_state.bet_amount = st.session_state.bet_amount * 2
+
+                        update_metrics(metrics, current_amount = st.session_state.current_amount, 
+                                                bet_amount = st.session_state.bet_amount, 
+                                                last_bet_amount = st.session_state.last_bet_amount, 
+                                                last_outcome = st.session_state.last_outcome, 
+                                                last_outcome_score=st.session_state.last_outcome_score)
+
+                    
+                        new_hand_double_down_option.empty()
+                        new_hand_hit_option.empty()
+                        new_hand_stand_option.empty()
+
+            if 'Stand' in new_hand.possible_actions:
+                if new_hand_stand_option.button('Stand'):
+                        new_hand.stand(game_play)
+                        new_hand_hit_option.empty()
+                        new_hand_double_down_option.empty()
+                        new_hand_stand_option.empty()
+
+            
+    if 'Stand' in player.possible_actions:
+        if player_stand_option.button('Stand'):
+                player.stand(game_play)
+                player_hit_option.empty()
+                player_double_down_option.empty()
+                player_stand_option.empty()
+
+
+
+    game_play.check_game_over()
+    game_play.update()
+
+
+
 
 with maincol3:
     result = st.empty()
