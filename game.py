@@ -118,6 +118,7 @@ class Player:
         self.hand_scores = [0, 0]
         self.best_outcome = 'Awaiting deal'
         self.possible_actions = ['No deal yet']
+        self.doubled_down = 'No'
     
     def __repr__(self):
         return 'Player Hand: {}, Scores: {}, Best Outcome: {}'.format(self.cards, list(set(self.hand_scores)),
@@ -146,14 +147,24 @@ class Player:
     
     def stand(self, game_play):
         self.possible_actions = []
-        game_play.commentary = 'Player is  ing'
+        game_play.commentary = 'Player is standing'
 
     
     def double_down(self, game_deck, game_play):
         self.hit(game_deck)
         game_play.commentary = 'Player is doubling down'
-        game_play.bet_amount *= 2
+        self.doubled_down = 'Yes'
         self.possible_actions = []
+
+    def split(self, game_deck, game_play):
+        game_play.commentary = 'Player is splitting'
+        split_card = self.cards.pop(1)
+        new_hand = Player()
+        new_hand.cards.append(split_card)
+        new_hand.hit(game_deck)
+        self.hit(game_deck)  # Continue with hitting on the original hand
+        self.get_possibilities(game_play)
+        return new_hand
     
     def player_hit(self, game_deck, game_play):
         self.hit(game_deck)
@@ -165,9 +176,13 @@ class Player:
             self.possible_actions = []
             game_play.commentary = 'Player has no more options'
 
-        elif len(self.cards) == 2:
-            self.possible_actions = ['Hit', 'Stand', 'Double Down']
-            game_play.commentary = 'Player can sitll hit, double down or stand'
+        elif len(self.cards) == 2 and self.cards[0].rank != self.cards[1].rank:
+            self.possible_actions = ['Hit', 'Stand', 'Double Down', 'SPLIT']
+            game_play.commentary = 'Player can still hit, double down, or stand SPL'
+        
+        elif len(self.cards) == 2 and self.cards[0].rank == self.cards[1].rank:
+            self.possible_actions = ['Hit', 'Stand', 'Double Down', 'Split']
+            game_play.commentary = 'Player can still hit, split, double down, or stand'
 
         else:
             self.possible_actions = ['Hit', 'Stand']
@@ -178,7 +193,6 @@ class Player:
         self.hand_scores = [0, 0]
         self.best_outcome = 'Awaiting deal'
         self.possible_actions = []
-        self.has_doubled_down = False
 
 
 class GamePlay:
@@ -187,9 +201,9 @@ class GamePlay:
         self.dealer = dealer
         self.game_deck = game_deck 
         self.blackjack_multiplier = blackjack_multiplier 
-        self.bet_amount = bet_amount
+        self.initial_bet_amount = bet_amount
         self.commentary = ""
-        self.player_win = "awaiting game"
+        self.player_win = "Game"
         self.player_win_amount = 0
         self.is_game_over = False
 
@@ -223,53 +237,77 @@ class GamePlay:
     def update(self):
         if len(self.player.possible_actions) == 0:
             if self.player.best_outcome == 'Bust':
-                self.commentary = "Player busted. Player loses ${}".format(str(self.bet_amount))
+                self.commentary = "Player busted. Player loses ${}".format(str(self.initial_bet_amount))
+                self.player_win = "Loss"
+
+            if self.player.best_outcome == 'Bust' and self.player.doubled_down == 'Yes':
+                self.commentary = "Player busted. Player loses ${}".format(str(self.initial_bet_amount * 2))
                 self.player_win = "Loss"
 
             elif self.player.best_outcome == 'Blackjack' and self.dealer.cards[0].rank not in [1, 10]:
                 self.commentary = "Player has Blackjack. Dealer has no chance to hit Blackjack. Player wins ${} dollars!".format(
-                    str(self.blackjack_multiplier * self.bet_amount))
-                self.player_win_amount = self.blackjack_multiplier * self.bet_amount
-                self.player_win = "Win"
+                    str(self.blackjack_multiplier * self.initial_bet_amount))
+                self.player_win = "Blackjack"
+                self.player_win_amount = self.blackjack_multiplier * self.initial_bet_amount
 
             else:
                 self.commentary = "Dealer turn can proceed as normal"
-                # self.player_win = "Game"
                 self.dealer_turn()
 
                 if self.dealer.best_outcome == 'Bust':
-                    self.commentary = "Dealer busted. Player wins ${}".format(str(self.bet_amount))
-                    self.player_win_amount = self.bet_amount
+                    self.commentary = "Dealer busted. Player wins ${}".format(str(self.initial_bet_amount))
                     self.player_win = "Win"
+                    self.player_win_amount = self.initial_bet_amount
+                
+                elif self.dealer.best_outcome == 'Bust' and self.player.doubled_down == 'Yes':
+                    self.commentary = "Dealer busted. Player wins ${}".format(str(self.initial_bet_amount * 2))
+                    self.player_win = "Win"
+                    self.player_win_amount = self.initial_bet_amount
 
                 elif self.dealer.best_outcome == 'Blackjack' and self.player.best_outcome == 'Blackjack':
-                    self.commentary = "Dealer and Player both have Blackjack. Player takes back ${}".format(str(self.bet_amount))
+                    self.commentary = "Dealer and Player both have Blackjack. Player takes back ${}".format(str(self.initial_bet_amount))
                     self.player_win = "Push"
 
                 elif self.dealer.best_outcome == 'Blackjack' and self.player.best_outcome != 'Blackjack':
-                    self.commentary = "Dealer has Blackjack. Player loses ${}".format(str(self.bet_amount))
+                    self.commentary = "Dealer has Blackjack. Player loses ${}".format(str(self.initial_bet_amount))
+                    self.player_win = "Loss"
+
+                elif self.dealer.best_outcome == 'Blackjack' and self.player.best_outcome != 'Blackjack' and self.player_doubled_down == 'Yes':
+                    self.commentary = "Dealer has Blackjack. Player loses ${}".format(str(self.initial_bet_amount * 2))
                     self.player_win = "Loss"
 
                 elif self.dealer.best_outcome != 'Blackjack' and self.player.best_outcome == 'Blackjack':
                     self.commentary = "Player has Blackjack. Player wins {} times their initial bet".format(
-                        str(self.blackjack_multiplier * self.bet_amount))
-                    self.player_win_amount = self.blackjack_multiplier * self.bet_amount
-                    self.player_win = "Win"
+                        str(self.blackjack_multiplier * self.initial_bet_amount))
+                    self.player_win = "Blackjack"
+                    self.player_win_amount = self.blackjack_multiplier * self.initial_bet_amount
 
                 elif int(self.dealer.best_outcome) == int(self.player.best_outcome):
-                    self.commentary = "Dealer and Player have same score. Player takes back ${}".format(str(self.bet_amount))
+                    self.commentary = "Dealer and Player have same score. Player takes back ${}".format(str(self.initial_bet_amount))
                     self.player_win = "Push"
 
                 elif int(self.dealer.best_outcome) > int(self.player.best_outcome):
                     self.commentary = "Dealer has {} whereas Player has {}. Player loses ${}".format(
-                        str(self.dealer.best_outcome), str(self.player.best_outcome), str(self.bet_amount))
+                        str(self.dealer.best_outcome), str(self.player.best_outcome), str(self.initial_bet_amount))
+                    self.player_win = "Loss"
+
+                
+                elif int(self.dealer.best_outcome) > int(self.player.best_outcome):
+                    self.commentary = "Dealer has {} whereas Player has {}. Player loses ${}".format(
+                        str(self.dealer.best_outcome), str(self.player.best_outcome), str(self.initial_bet_amount * 2))
                     self.player_win = "Loss"
 
                 elif int(self.dealer.best_outcome) < int(self.player.best_outcome):
                     self.commentary = "Dealer has {} whereas Player has {}. Player wins ${}".format(
-                        str(self.dealer.best_outcome), str(self.player.best_outcome), str(self.blackjack_multiplier * self.bet_amount))
+                       str(self.dealer.best_outcome), str(self.player.best_outcome), str(self.initial_bet_amount))
                     self.player_win = "Win"
-                    self.player_win_amount = self.blackjack_multiplier * self.bet_amount
+                    self.player_win_amount = self.initial_bet_amount
+                
+                elif int(self.dealer.best_outcome) < int(self.player.best_outcome) and self.player_doubled_down == 'Yes':
+                    self.commentary = "Dealer has {} whereas Player has {}. Player wins ${}".format(
+                       str(self.dealer.best_outcome), str(self.player.best_outcome), str(self.initial_bet_amount * 2))
+                    self.player_win = "Win"
+                    self.player_win_amount = self.initial_bet_amount
 
         else:
             pass 
@@ -279,6 +317,8 @@ class GamePlay:
         self.commentary = " "
         self.player_win_amount = 0
         self.is_game_over = False
+        self.player_win = "Game"
+        
 
     def deal_in(self):
         self.dealer.reset()
