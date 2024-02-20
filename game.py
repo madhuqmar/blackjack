@@ -172,14 +172,8 @@ class Player:
         self.doubled_down = 'Yes'
         self.possible_actions = []
 
-    def split(self, game_deck, game_play):
+    def split(self, game_play):
         game_play.commentary = 'Player is splitting'
-        split_card = self.cards.pop(1)
-        new_hand = Player()
-        new_hand.cards.append(split_card)
-
-        self.get_possibilities(game_play)
-        return new_hand
     
     def player_hit(self, game_deck, game_play):
         self.hit(game_deck)
@@ -236,7 +230,7 @@ class GamePlay:
         elif self.player.best_outcome == 'Bust':
             self.commentary = 'Player is Bust. Dealer does not take any action.'
             return
-        
+
         while True:
             self.dealer.hit(self.game_deck)
 
