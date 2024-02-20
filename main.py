@@ -145,11 +145,23 @@ with maincol2:
             player.split(game_play)
 
             split_card = player.cards.pop()
-            player.hand_scores = [0, 0]
+            
 
             player.player_hit(game_deck, game_play)
+            player.hand_scores = [0, 0]
             player.hand_scores = [a + b for a, b in zip(player.cards[0].card_scores, player.cards[1].card_scores)]
-            # player.hand_scores = max([i for i in player.hand_scores if i <= 21])
+
+            if len(player.cards) <= 1:
+                player.best_outcome = 'Awaiting Deal'
+
+            elif 21 in player.hand_scores and len(player.cards) == 2:
+                player.best_outcome = 'Blackjack'
+
+            elif player.hand_scores[0] > 21 and player.hand_scores[1] > 21:
+                player.best_outcome = 'Bust'
+
+            else:
+                player.best_outcome = max([i for i in player.hand_scores if i <= 21])
 
             new_hand = Player()
             new_hand.cards.append(split_card)
@@ -170,16 +182,26 @@ with maincol2:
     
         split_game = start_split_game(st.session_state.new_hand, game_play, st.session_state.bet_amount)
 
-        st.session_state.new_hand.player_hit(game_deck, split_game)
-        st.session_state.new_hand.hand_scores = [a + b for a, b in zip(st.session_state.new_hand.cards[0].card_scores, st.session_state.new_hand.cards[1].card_scores)]
+        split_game.player = st.session_state.new_hand
+        
+        split_game.player.player_hit(game_deck, split_game)
+        split_game.player.hand_scores = [0, 0]
+        split_game.player.hand_scores = [a + b for a, b in zip(split_game.player.cards[0].card_scores, split_game.player.cards[1].card_scores)]
+
+        if len(split_game.player.cards) <= 1:
+            split_game.player.best_outcome = 'Awaiting Deal'
+
+        elif 21 in split_game.player.hand_scores and len(split_game.player.cards) == 2:
+            split_game.player.best_outcome = 'Blackjack'
+
+        elif split_game.player.hand_scores[0] > 21 and split_game.player.hand_scores[1] > 21:
+            split_game.player.best_outcome = 'Bust'
+
+        else:
+            split_game.player.best_outcome = max([i for i in split_game.player.hand_scores if i <= 21])
 
         new_hand_images = st.empty()
         new_hand_images.image([Image.open(card.image_location) for card in st.session_state.new_hand.cards], width=100)
-
-        split_game.player = st.session_state.new_hand
-
-        st.text(st.session_state.new_hand)
-        st.text(split_game.player)
 
         st.write("**New Hand Player Options**")
 
