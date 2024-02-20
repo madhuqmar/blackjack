@@ -29,9 +29,12 @@ def start_game(bet_amount):
     return game_deck, dealer, player, game_play
 
 @st.cache_resource()
-def start_split_game(_new_hand, _dealer, _game_deck, _blackjack_multiplier, _bet_amount):
-    game_play = GamePlay(player=_new_hand, dealer=_dealer, game_deck=_game_deck, blackjack_multiplier=_blackjack_multiplier, bet_amount=_bet_amount)
-    return game_deck, dealer, player, game_play
+def start_split_game(_new_hand, _game_play, _bet_amount):
+    dealer = _game_play.dealer
+    game_deck = _game_play.game_deck
+    blackjack_multiplier = _game_play.blackjack_multiplier
+    split_game = GamePlay(_new_hand, dealer, game_deck, blackjack_multiplier, _bet_amount)
+    return split_game
     
 
 maincol1, maincol2, maincol3 = st.columns(3)
@@ -39,12 +42,10 @@ maincol1, maincol2, maincol3 = st.columns(3)
 with maincol1:
 
     ### TRACKING PLAYER POCKETS ###
-
     if 'current_amount' not in st.session_state:  # if game not started
         st.session_state.current_amount = 1000
 
     ### TRACKING BET AMOUNTS ###
-
     bet_amounts = [0, 25, 50, 100, 200]
     selected_bet_amount = st.selectbox("Select your bet amount", bet_amounts)
 
@@ -52,7 +53,6 @@ with maincol1:
         st.session_state.last_bet_amount = 0
 
     ### TRACKING PLAYER GAME OUTCOMES ###
-
     if 'last_outcome' not in st.session_state:
         st.session_state.last_outcome = 'Start'
 
@@ -71,6 +71,8 @@ with maincol1:
             game_deck, dealer, player, game_play = start_game(st.session_state.bet_amount)
             game_play.deal_in()
             st.session_state.current_amount -= st.session_state.bet_amount
+            if 'split' in st.session_state:
+                st.session_state.split = False
 
     ## CHECK FOR SPLIT GAME ###
     if 'split' not in st.session_state:
@@ -144,13 +146,14 @@ with maincol2:
 
             split_card = player.cards.pop()
             player.hand_scores = [0, 0]
+
             player.player_hit(game_deck, game_play)
-            player.hand_scores = [a + b for a, b in zip(player.hand_scores, player.card_scores)]
+            player.hand_scores = [a + b for a, b in zip(player.cards[0].card_scores, player.cards[1].card_scores)]
+            # player.hand_scores = max([i for i in player.hand_scores if i <= 21])
 
             new_hand = Player()
             new_hand.cards.append(split_card)
-    
-            
+      
             if new_hand not in st.session_state:
                 st.session_state.new_hand = new_hand
             st.session_state.split = True
@@ -165,10 +168,15 @@ with maincol2:
 
         st.write("**New Hand After Split**")
     
-        game_deck, dealer, player, split_game = start_split_game(_new_hand=st.session_state.new_hand, _dealer=dealer, _game_deck=game_deck, _blackjack_multiplier=blackjack_multiplier, _bet_amount=st.session_state.bet_amount)
+        split_game = start_split_game(st.session_state.new_hand, game_play, st.session_state.bet_amount)
+
         st.session_state.new_hand.player_hit(game_deck, split_game)
+        st.session_state.new_hand.hand_scores = [a + b for a, b in zip(st.session_state.new_hand.cards[0].card_scores, st.session_state.new_hand.cards[1].card_scores)]
+
         new_hand_images = st.empty()
         new_hand_images.image([Image.open(card.image_location) for card in st.session_state.new_hand.cards], width=100)
+
+        split_game.player = st.session_state.new_hand
 
         st.text(st.session_state.new_hand)
         st.text(split_game.player)
@@ -233,7 +241,6 @@ with maincol2:
 
     ### SPLIT GAME END ###
 
-
     if 'Stand' in player.possible_actions:
         if player_stand_option.button('Stand'):
             player.stand(game_play)
@@ -244,7 +251,6 @@ with maincol2:
                 player_stand_option.empty()
 
 
-
     game_play.check_game_over()
     game_play.update()
 
@@ -252,8 +258,6 @@ with maincol2:
         dealer_images_new.image([Image.open(card.image_location) for card in dealer.cards], width=100)
     else:
         dealer_images.image([Image.open(card.image_location) for card in dealer.cards], width=100)
-
-
 
 with maincol3:
     if st.session_state.split == False:
@@ -296,7 +300,3 @@ update_metrics(metrics, current_amount = st.session_state.current_amount,
                         last_bet_amount = st.session_state.last_bet_amount, 
                         last_outcome = st.session_state.last_outcome, 
                         last_outcome_score=st.session_state.last_outcome_score)
-
-
-# if __name__ == "__main__":
-#     main()
