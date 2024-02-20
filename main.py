@@ -141,12 +141,10 @@ with maincol2:
 
     if 'Split' in player.possible_actions:
         if player_split_option.button('Split'):
-            
             player.split(game_play)
 
             split_card = player.cards.pop()
             
-
             player.player_hit(game_deck, game_play)
             player.hand_scores = [0, 0]
             player.hand_scores = [a + b for a, b in zip(player.cards[0].card_scores, player.cards[1].card_scores)]
@@ -179,33 +177,38 @@ with maincol2:
         player_images.image([Image.open(card.image_location) for card in player.cards], width=100)
 
         st.write("**New Hand After Split**")
+
+        split_game_player = Player()
+        split_game_player.cards = st.session_state.new_hand.cards[:]
+
     
-        split_game = start_split_game(st.session_state.new_hand, game_play, st.session_state.bet_amount)
+        split_game = start_split_game(split_game_player, game_play, st.session_state.bet_amount)
 
-        split_game.player = st.session_state.new_hand
+        split_game.player = split_game_player
         
-        split_game.player.player_hit(game_deck, split_game)
-        split_game.player.hand_scores = [0, 0]
-        split_game.player.hand_scores = [a + b for a, b in zip(split_game.player.cards[0].card_scores, split_game.player.cards[1].card_scores)]
+        split_game_player.player_hit(game_deck, split_game)
 
-        if len(split_game.player.cards) <= 1:
-            split_game.player.best_outcome = 'Awaiting Deal'
+        split_game_player.hand_scores = [0, 0]
+        split_game_player.hand_scores = [a + b for a, b in zip(split_game.player.cards[0].card_scores, split_game.player.cards[1].card_scores)]
 
-        elif 21 in split_game.player.hand_scores and len(split_game.player.cards) == 2:
-            split_game.player.best_outcome = 'Blackjack'
+        if len(split_game_player.cards) <= 1:
+            split_game_player.best_outcome = 'Awaiting Deal'
 
-        elif split_game.player.hand_scores[0] > 21 and split_game.player.hand_scores[1] > 21:
-            split_game.player.best_outcome = 'Bust'
+        elif 21 in split_game_player.hand_scores and len(split_game_player.cards) == 2:
+            split_game_player.best_outcome = 'Blackjack'
+
+        elif split_game_player.hand_scores[0] > 21 and split_game_player.hand_scores[1] > 21:
+            split_game_player.best_outcome = 'Bust'
 
         else:
-            split_game.player.best_outcome = max([i for i in split_game.player.hand_scores if i <= 21])
+            split_game_player.best_outcome = max([i for i in split_game_player.hand_scores if i <= 21])
 
         new_hand_images = st.empty()
-        new_hand_images.image([Image.open(card.image_location) for card in st.session_state.new_hand.cards], width=100)
+        new_hand_images.image([Image.open(card.image_location) for card in split_game_player.cards], width=100)
 
         st.write("**New Hand Player Options**")
 
-        split_game.player.possible_actions = ['Hit', 'Stand', 'Double Down']
+        split_game_player.possible_actions = ['Hit', 'Stand', 'Double Down']
         new_hand_hit_option = st.empty()
         new_hand_stand_option = st.empty()
         new_hand_double_down_option = st.empty()
@@ -229,16 +232,16 @@ with maincol2:
                             for card in dealer.cards], width=100)
 
     
-        if 'Hit' in split_game.player.possible_actions:
+        if 'Hit' in split_game_player.possible_actions:
             if new_hand_hit_option.button('Hit 2'):
-                split_game.player.player_hit(game_deck, split_game)
-                new_hand_images.image([Image.open(card.image_location) for card in split_game.player.cards], width=100)
+                split_game_player.player_hit(game_deck, split_game)
+                new_hand_images.image([Image.open(card.image_location) for card in split_game_player.cards], width=100)
                 if 'Hit' not in split_game.player.possible_actions:
                     new_hand_hit_option.empty()
 
-        if 'Double Down' in split_game.player.possible_actions:
+        if 'Double Down' in split_game_player.possible_actions:
             if new_hand_double_down_option.button('Double Down 2'):
-                split_game.player.double_down(game_deck, split_game)
+                split_game_player.double_down(game_deck, split_game)
 
                 st.session_state.current_amount -= st.session_state.bet_amount
                 st.session_state.bet_amount = st.session_state.bet_amount * 2
@@ -253,9 +256,9 @@ with maincol2:
                 new_hand_hit_option.empty()
                 new_hand_stand_option.empty()
 
-        if 'Stand' in split_game.player.possible_actions:
+        if 'Stand' in split_game_player.possible_actions:
             if new_hand_stand_option.button('Stand 2'):
-                split_game.player.stand(split_game)
+                split_game_player.stand(split_game)
 
                 new_hand_hit_option.empty()
                 new_hand_double_down_option.empty()
