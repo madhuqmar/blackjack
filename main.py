@@ -125,6 +125,7 @@ with maincol2:
     if 'Double Down' in player.possible_actions:
         if player_double_down_option.button('Double Down'):
             player.double_down(game_deck, game_play)
+            player_images.image([Image.open(card.image_location) for card in game_play.player.cards], width=100)
             st.session_state.current_amount -= st.session_state.bet_amount
             st.session_state.bet_amount = st.session_state.bet_amount * 2
 
