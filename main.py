@@ -2,6 +2,7 @@ import streamlit as st
 from game import GamePlay, Player, Dealer, Deck
 from PIL import Image
 
+
 st.set_page_config(layout="wide")
 
 number_of_decks = 8
@@ -60,12 +61,21 @@ with maincol1:
     if 'last_outcome_score' not in st.session_state:
         st.session_state.last_outcome_score = 0
 
+    ### TRACK GAME STATUS ###
+    if 'game_finished' not in st.session_state:
+        st.session_state.game_finished = False
+
+    if 'game_started' not in st.session_state:
+        st.session_state.game_started = False
+
     ## INITIALIZE GAME ###
     st.session_state.bet_amount = selected_bet_amount
     game_deck, dealer, player, game_play = start_game(st.session_state.bet_amount)
 
     if st.button('Play with my bets'):
         st.success("Bets placed!")
+        st.session_state.game_finished = False
+        st.session_state.game_started = True
 
         if selected_bet_amount:
             st.session_state.bet_amount = selected_bet_amount
@@ -94,21 +104,27 @@ with maincol1:
 
 with maincol2:
 
+    if 'player_cards' not in st.session_state:
+        st.session_state.player_cards = []  # Initialize player cards in session state
+    if 'dealer_cards' not in st.session_state:
+        st.session_state.dealer_cards = []  # Initialize dealer cards in session state
+
     player_stats = st.empty()
     st.write("**Player Spread**")
-    player_images = st.empty()
-    player_images.image([Image.open(card.image_location) for card in game_play.player.cards], width=100)
+    if st.session_state.game_started:
+        player_images = st.container()
+        player_images.image([Image.open(card.image_location) for card in game_play.player.cards], width=100)
 
     dealer_stats = st.empty()
     dealer_images = st.empty()
 
     with dealer_stats.container():
         st.write("**Dealer Spread**")
+        if st.session_state.game_started:
+            dealer_images.image([Image.open(card.image_location) for card in game_play.dealer.cards], width=100)
 
-    dealer_images.image([Image.open(card.image_location) for card in game_play.dealer.cards], width=100)
-        
-
-    st.write("**Player Options**")
+    if not st.session_state.game_finished:
+        st.write("**Player Options**")
     player_hit_option = st.empty()
     player_double_down_option = st.empty()
     player_split_option = st.empty()
@@ -118,7 +134,9 @@ with maincol2:
     if 'Hit' in player.possible_actions:
         if player_hit_option.button('Hit'):
             player.player_hit(game_deck, game_play)
-            player_images.image([Image.open(card.image_location) for card in game_play.player.cards], width=100)
+            player_images.image([Image.open(game_play.player.cards[-1].image_location)], width=100)
+
+
             if 'Hit' not in game_play.player.possible_actions:
                 player_hit_option.empty()
 
@@ -302,11 +320,20 @@ with maincol2:
         if len(player.possible_actions) == 0 and len(split_game_player.possible_actions) == 0:
             game_play.check_game_over()
             game_play.update()
+            if game_play.check_game_over():
+                st.session_state.game_finished = True
+
             split_game.check_game_over()
             split_game.update()
+            if split_game.check_game_over():
+                st.session_state.game_finished = True
+
             dealer_images_new.image([Image.open(card.image_location) for card in dealer.cards], width=100)
     else:
         game_play.check_game_over()
+        if game_play.check_game_over():
+            st.session_state.game_finished = True
+
         game_play.update()
         dealer_images.image([Image.open(card.image_location) for card in dealer.cards], width=100)
 
@@ -325,28 +352,42 @@ with maincol3:
 
 
 #UPDATE LAST OUTCOME
-if game_play.player_win == "Win" and game_play.player_win == "Yes":
-    st.session_state.last_outcome = "Double Win"
-elif game_play.player_win == "Loss" and game_play.player_win == "No":
-    st.session_state.last_outcome = "Double Loss"
+# if game_play.player_win == "Win" and game_play.player_win == "Yes":
+#     st.session_state.last_outcome = "Double Win"
+# elif game_play.player_win == "Loss" and game_play.player_win == "No":
+#     st.session_state.last_outcome = "Double Loss"
+#
+# if st.session_state.split == True:
+#     if game_play.player_win == "Win" and split_game.player_win == "Win":
+#         st.session_state.last_outcome = "Double Win"
+#     elif game_play.player_win == "Loss" and split_game.player_win == "Loss":
+#         st.session_state.last_outcome = "Double Loss"
+#     elif game_play.player_win == "Loss" and split_game.player_win == "Win":
+#         st.session_state.last_outcome = "Partial Win"
+#     elif game_play.player_win == "Win" and split_game.player_win == "Loss":
+#         st.session_state.last_outcome = "Partial Win"
+#     elif game_play.player_win == "Loss" and split_game.player_win == "Push":
+#         st.session_state.last_outcome = "Partial Loss"
+#     elif game_play.player_win == "Push" and split_game.player_win == "Loss":
+#         st.session_state.last_outcome = "Partial Loss"
+#     else:
+#         pass
+# else:
+#     st.session_state.last_outcome = game_play.player_win
 
-if st.session_state.split == True:
-    if game_play.player_win == "Win" and split_game.player_win == "Win":
-        st.session_state.last_outcome = "Double Win"
-    elif game_play.player_win == "Loss" and split_game.player_win == "Loss":
-        st.session_state.last_outcome = "Double Loss"
-    elif game_play.player_win == "Loss" and split_game.player_win == "Win":
-        st.session_state.last_outcome = "Partial Win"
-    elif game_play.player_win == "Win" and split_game.player_win == "Loss":
-        st.session_state.last_outcome = "Partial Win"
-    elif game_play.player_win == "Loss" and split_game.player_win == "Push":
-        st.session_state.last_outcome = "Partial Loss"
-    elif game_play.player_win == "Push" and split_game.player_win == "Loss":
-        st.session_state.last_outcome = "Partial Loss"
+if st.session_state.game_finished:
+    if st.session_state.split == True:
+        if game_play.player_win == "Win" and split_game.player_win == "Win":
+            st.session_state.last_outcome = "Double Win"
+        elif game_play.player_win == "Loss" and split_game.player_win == "Loss":
+            st.session_state.last_outcome = "Double Loss"
+        elif game_play.player_win == "Loss" and split_game.player_win == "Win":
+            st.session_state.last_outcome = "Partial Win"
+        elif game_play.player_win == "Win" and split_game.player_win == "Loss":
+            st.session_state.last_outcome = "Partial Win"
+        # Add remaining conditions
     else:
-        pass
-else:
-    st.session_state.last_outcome = game_play.player_win
+        st.session_state.last_outcome = game_play.player_win
 
 
 #for bet amount delta
